@@ -52,6 +52,10 @@ class Board: ObservableObject {
     var directionRight: Bool = true
     var timer: Timer? = nil
     
+    var firstTile: Tile? {
+        return self.tiles.filter { $0.x == 0 && $0.y == 0 }.first
+    }
+    
     func setTilePosition(_ tile: Tile) {
         let dx = availableSize.width/2/CGFloat(self.size)
         let dy = availableSize.height/2/CGFloat(self.size)
@@ -159,7 +163,7 @@ struct BoardView: View {
             .offset(x: (geometry.size.width-availableSize.width)/2, y: (geometry.size.height-availableSize.height)/2)
             .onAppear{
                 self.board.availableSize = availableSize
-                self.board.start()
+                //self.board.start()
             }
         }
     }

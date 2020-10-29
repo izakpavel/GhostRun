@@ -8,7 +8,46 @@
 import SwiftUI
 
 class Game : ObservableObject {
+    enum State {
+        case intro
+        case running
+        case finished
+    }
+    
     var board = Board(size: 5)
+    
+    @Published var state: State = .intro
+    @Published var score: Int = 0
+    
+    private var currentInterval: Double = 0.4
+    
+    func isGhostCollision()-> Bool {
+        guard let firstTile = self.board.firstTile else {
+            return false
+        }
+        return firstTile.hasObject
+    }
+    
+    func gameStep() {
+        withAnimation(Animation.easeIn(duration: self.currentInterval)) {
+            self.board.move()
+        }
+        
+        if false {//self.isGhostCollision() {
+            self.state = .finished
+        }
+        else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval) {
+                self.gameStep()
+            }
+        }
+        self.currentInterval -= 0.001
+    }
+    
+    func start() {
+        self.state = .running
+        self.gameStep()
+    }
 }
 
 
@@ -47,5 +86,8 @@ struct GameView: View {
         .frame(maxWidth:.infinity, maxHeight: .infinity)
         .background(Color("Background"))
         .ignoresSafeArea()
+        .onAppear{
+            self.game.start()
+        }
     }
 }
