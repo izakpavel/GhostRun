@@ -125,7 +125,7 @@ struct TileView: View {
             .fill(Color("TileBase"))
             //.overlay(Circle().opacity(tile.hasObject ? 1 : 0))
             //.overlay(Text("\(tile.id)"))
-            .frame(width: 58, height: 38)
+            .frame(width: 60, height: 40)
             .scaleEffect(self.tile.scale)
             .position(self.tile.position)
             .opacity(self.tile.opacity)
@@ -135,17 +135,20 @@ struct TileView: View {
 
 
 struct BoardView: View {
-    @ObservedObject var board = Board(size: 5)
+    @ObservedObject var board: Board
     
     var body: some View {
         GeometryReader { geometry in
             
-            let availableSize = CGSize(width: min(geometry.size.width, geometry.size.height), height: 0.666*min(geometry.size.width, geometry.size.height))
+            let availableSize = CGSize(width: min(geometry.size.width, geometry.size.height)*1.5, height: min(geometry.size.width, geometry.size.height))
             
             ZStack {
                 ForEach (self.board.tiles) { tile in
                     TileView(tile: tile)
                 }
+                GhostView()
+                    .frame(width: 30, height: 40)
+                    .position(x: availableSize.width/2, y: availableSize.height-50)
             }
             .frame(width: availableSize.width, height: availableSize.height)
             .offset(x: (geometry.size.width-availableSize.width)/2, y: (geometry.size.height-availableSize.height)/2)

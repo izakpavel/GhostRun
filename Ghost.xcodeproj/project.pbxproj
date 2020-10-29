@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8B589DEF254855BB006B15F6 /* GhostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B589DEE254855BB006B15F6 /* GhostApp.swift */; };
-		8B589DF1254855BB006B15F6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B589DF0254855BB006B15F6 /* ContentView.swift */; };
+		8B589DF1254855BB006B15F6 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B589DF0254855BB006B15F6 /* GameView.swift */; };
 		8B589DF3254855BD006B15F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B589DF2254855BD006B15F6 /* Assets.xcassets */; };
 		8B589DF6254855BD006B15F6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B589DF5254855BD006B15F6 /* Preview Assets.xcassets */; };
 		8B65D18F254ACE0900DBF3A0 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B65D18E254ACE0900DBF3A0 /* Extensions.swift */; };
@@ -19,7 +19,7 @@
 /* Begin PBXFileReference section */
 		8B589DEB254855BB006B15F6 /* Ghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B589DEE254855BB006B15F6 /* GhostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostApp.swift; sourceTree = "<group>"; };
-		8B589DF0254855BB006B15F6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8B589DF0254855BB006B15F6 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		8B589DF2254855BD006B15F6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B589DF5254855BD006B15F6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8B589DF7254855BD006B15F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -59,7 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				8B589DEE254855BB006B15F6 /* GhostApp.swift */,
-				8B589DF0254855BB006B15F6 /* ContentView.swift */,
+				8B589DF0254855BB006B15F6 /* GameView.swift */,
 				8B589DF2254855BD006B15F6 /* Assets.xcassets */,
 				8B589DF7254855BD006B15F6 /* Info.plist */,
 				8B589DF4254855BD006B15F6 /* Preview Content */,
@@ -148,7 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B65D18F254ACE0900DBF3A0 /* Extensions.swift in Sources */,
-				8B589DF1254855BB006B15F6 /* ContentView.swift in Sources */,
+				8B589DF1254855BB006B15F6 /* GameView.swift in Sources */,
 				8B9A261A2549D107004E88F6 /* BoardView.swift in Sources */,
 				8B9A26172549CD5A004E88F6 /* GhostView.swift in Sources */,
 				8B589DEF254855BB006B15F6 /* GhostApp.swift in Sources */,
