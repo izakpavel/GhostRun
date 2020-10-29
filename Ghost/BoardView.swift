@@ -25,15 +25,15 @@ class Tile : ObservableObject, Identifiable{
     }
     
     var isFirstRow: Bool {
-        return (x==0 || y==0)
+        return (x == -1 || y == -1)
     }
     
     var isLastRow: Bool {
-        return (x==boardSize-1 || y==boardSize-1)
+        return (x==boardSize || y==boardSize)
     }
     
     var scale: CGFloat {
-        return (isFirstRow || isLastRow) ? 0.1 : 1
+        return (isFirstRow || isLastRow) ? 0.3 : 1
     }
     
     var opacity: Double {
@@ -43,7 +43,11 @@ class Tile : ObservableObject, Identifiable{
 
 class Board: ObservableObject {
     let size: Int
-    let availableSize: CGSize = CGSize(width: 300, height: 200)
+    var availableSize: CGSize = CGSize() {
+        didSet {
+            self.adjustTilePositions()
+        }
+    }
     @Published var tiles: [Tile]
     var directionRight: Bool = true
     var timer: Timer? = nil
@@ -64,8 +68,8 @@ class Board: ObservableObject {
     init(size: Int) {
         self.size = size
         var tiles = [Tile]()
-        for y in 0..<size {
-            for x in 0..<size {
+        for y in -1..<size+1 {
+            for x in -1..<size+1 {
                 let tile = Tile(x: x, y: y, index: tiles.count, boardSize: size)
                 tiles.append(tile)
             }
@@ -81,10 +85,10 @@ class Board: ObservableObject {
     func move() {
         self.tiles.forEach { tile in
             if (directionRight) {
-                tile.y = (tile.y + size - 1)%self.size
+                tile.y = tile.y > -1 ? (tile.y - 1) : self.size
             }
             else {
-                tile.x = (tile.x + size - 1)%self.size
+                tile.x = tile.x > -1 ? (tile.x - 1) : self.size
             }
         }
         self.adjustTilePositions()
@@ -118,10 +122,10 @@ struct TileView: View {
     @ObservedObject var tile: Tile
     var body: some View {
         TileShape()
-            .stroke(Color.yellow, lineWidth: 4)
-            .overlay(Circle().opacity(tile.hasObject ? 1 : 0))
-            .overlay(Text("\(tile.id)"))
-            .frame(width: 60, height: 40)
+            .fill(Color("TileBase"))
+            //.overlay(Circle().opacity(tile.hasObject ? 1 : 0))
+            //.overlay(Text("\(tile.id)"))
+            .frame(width: 58, height: 38)
             .scaleEffect(self.tile.scale)
             .position(self.tile.position)
             .opacity(self.tile.opacity)
@@ -134,15 +138,21 @@ struct BoardView: View {
     @ObservedObject var board = Board(size: 5)
     
     var body: some View {
-        ZStack {
-            ForEach (self.board.tiles) { tile in
-                TileView(tile: tile)
+        GeometryReader { geometry in
+            
+            let availableSize = CGSize(width: min(geometry.size.width, geometry.size.height), height: 0.666*min(geometry.size.width, geometry.size.height))
+            
+            ZStack {
+                ForEach (self.board.tiles) { tile in
+                    TileView(tile: tile)
+                }
             }
-        }
-        .frame(width: 300, height: 200)
-        .background(Color.blue)
-        .onAppear{
-            self.board.start()
+            .frame(width: availableSize.width, height: availableSize.height)
+            .offset(x: (geometry.size.width-availableSize.width)/2, y: (geometry.size.height-availableSize.height)/2)
+            .onAppear{
+                self.board.availableSize = availableSize
+                self.board.start()
+            }
         }
     }
 }
