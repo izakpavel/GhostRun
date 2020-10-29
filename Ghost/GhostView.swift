@@ -90,12 +90,12 @@ struct GhostView: View {
     var body: some View {
         let background = GhostShape(phase: -self.phase+2*CGFloat.pi)
             .fill(Color("GhostDark"))
-            .offset(x: 0, y: 6)
+            .offset(x: 0, y: 3)
         return GhostShape(phase: self.phase)
             .fill(LinearGradient(gradient: Gradient(colors: [Color("GhostLight"), Color("GhostDark")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0)))
             .background(background)
             .overlay(GhostFaceShape(mouthRatio: self.mouthRatio, smileFraction: smilePhase).fill(Color("Background")))
-            .shadow(color: Color("GhostLight").opacity(0.2), radius: 6, x: 0, y: 0)
+            //.shadow(color: Color("GhostLight").opacity(0.2), radius: 6, x: 0, y: 0)
             .onAppear {
                 withAnimation(Animation.linear(duration: 2.0).repeatForever(autoreverses: false)) {
                     self.phase += CGFloat.pi*2
@@ -145,4 +145,35 @@ struct GhostView: View {
         }
     }
     
+}
+
+// MARK: Cross
+
+struct CrossShape: Shape {
+    let thickness: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        return Path { path in
+            let width = rect.width
+            let height = rect.height
+            let thickX = rect.width*thickness
+            let thickY = rect.height*thickness
+            
+            path.addRect(CGRect(origin: CGPoint(x: (width-thickX)/2, y: 0), size: CGSize(width: thickX, height: height)))
+            path.addRect(CGRect(origin: CGPoint(x: height*0.3-thickY/2, y: height*0.3-thickY/2), size: CGSize(width: width-height*0.3-thickY/2, height: thickY)))
+        }
+    }
+}
+
+
+struct CrossView: View {
+    var body: some View {
+        let back = CrossShape(thickness: 0.2)
+            .fill(Color("CrossLight"))
+            .offset(x: -2, y: 0)
+        
+        CrossShape(thickness: 0.2)
+            .fill(Color("CrossBase"))
+            .background(back)
+    }
 }

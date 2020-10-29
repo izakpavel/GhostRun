@@ -121,9 +121,14 @@ struct TileShape: Shape {
 struct TileView: View {
     @ObservedObject var tile: Tile
     var body: some View {
+        
+        let overlayCross = CrossView().opacity(tile.hasObject ? 1 : 0)
+            .frame(width: 40, height: 40)
+            .offset(x:0, y: -20)
+        
         TileShape()
             .fill(Color("TileBase"))
-            //.overlay(Circle().opacity(tile.hasObject ? 1 : 0))
+            .overlay(overlayCross)
             //.overlay(Text("\(tile.id)"))
             .frame(width: 60, height: 40)
             .scaleEffect(self.tile.scale)
