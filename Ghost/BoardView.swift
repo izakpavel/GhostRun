@@ -99,6 +99,12 @@ class Board: ObservableObject {
         self.tiles.forEach{ self.setTilePosition($0)}
     }
     
+    func clear() {
+        self.tiles.forEach{
+            $0.hasObject = ($0.x>2 && $0.y>2 && Double.random(in: 0...1)>0.8)
+        }
+    }
+    
     
     func move() {
         self.tiles.forEach { tile in

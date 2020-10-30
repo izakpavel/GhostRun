@@ -72,8 +72,11 @@ class Game : ObservableObject {
         }
         
         if self.isGhostCollision() {
-            self.ghost.roarAndClose()
-            self.state = .finished
+            DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval) {
+                withAnimation() {
+                    self.state = .finished
+                }
+            }
         }
         else {
             DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval*1.5) {
@@ -85,8 +88,11 @@ class Game : ObservableObject {
     }
     
     func start() {
-        self.state = .running
+        withAnimation() {
+            self.state = .running
+        }
         self.score = 0
+        self.board.clear()
         self.gameStep()
     }
 }
@@ -132,5 +138,7 @@ struct GameView: View {
         .onAppear{
             self.game.start()
         }
+        .blur(radius: self.game.state != .finished ? 0 : 10.0)
+        .overlay(self.game.state == .finished ? EndView(game: self.game) : nil)
     }
 }
