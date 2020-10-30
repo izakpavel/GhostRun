@@ -12,7 +12,7 @@ class Tile : ObservableObject, Identifiable{
     let boardSize: Int
     var x: Int
     var y: Int
-    var hasObject: Bool = false
+    @Published var hasObject: Bool = false
     @Published var position: CGPoint = CGPoint()
     
     init(x: Int, y: Int, index: Int, boardSize: Int) {
@@ -21,7 +21,7 @@ class Tile : ObservableObject, Identifiable{
         self.id = index
         self.boardSize = boardSize
         
-        self.hasObject = Int.random(in: 0..<10)>5
+        self.hasObject = (x>2 && y>2 && Double.random(in: 0...1)>0.8)
     }
     
     var isFirstRow: Bool {
@@ -33,7 +33,7 @@ class Tile : ObservableObject, Identifiable{
     }
     
     var scale: CGFloat {
-        return (isFirstRow || isLastRow) ? 0.3 : 1
+        return (isFirstRow || isLastRow) ? 0.1 : 1
     }
     
     var opacity: Double {
@@ -71,6 +71,15 @@ class Board: ObservableObject {
         let b = vy*tile.y
         let c = CGPoint(x: availableSize.width/2, y: availableSize.height-dy)
         tile.position = c + a + b
+    }
+    
+    func lastTiles(_ directionRight: Bool)->[Tile] {
+        if directionRight {
+            return self.tiles.filter { $0.y == size }
+        }
+        else {
+            return self.tiles.filter { $0.x == size }
+        }
     }
     
     init(size: Int) {
@@ -151,6 +160,7 @@ struct TileView: View {
 
 struct BoardView: View {
     @ObservedObject var board: Board
+    var ghost: Ghost
     
     var body: some View {
         GeometryReader { geometry in
@@ -161,7 +171,7 @@ struct BoardView: View {
                 ForEach (self.board.tiles) { tile in
                     TileView(tile: tile)
                 }
-                GhostView()
+                GhostView(ghost: self.ghost)
                     .frame(width: 30, height: 40)
                     .position(x: availableSize.width/2, y: availableSize.height-50)
             }

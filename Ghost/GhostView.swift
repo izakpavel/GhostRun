@@ -82,26 +82,10 @@ struct GhostFaceShape: Shape {
     }
 }
 
-struct GhostView: View {
-    @State var phase: CGFloat = 0.0
-    @State var smilePhase: CGFloat = 0.5
-    @State var mouthRatio: CGFloat = 0.05
-    
-    var body: some View {
-        let background = GhostShape(phase: -self.phase+2*CGFloat.pi)
-            .fill(Color("GhostDark"))
-            .offset(x: 0, y: 3)
-        return GhostShape(phase: self.phase)
-            .fill(LinearGradient(gradient: Gradient(colors: [Color("GhostLight"), Color("GhostDark")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0)))
-            .background(background)
-            .overlay(GhostFaceShape(mouthRatio: self.mouthRatio, smileFraction: smilePhase).fill(Color("Background")))
-            //.shadow(color: Color("GhostLight").opacity(0.2), radius: 6, x: 0, y: 0)
-            .onAppear {
-                withAnimation(Animation.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                    self.phase += CGFloat.pi*2
-                }
-            }
-    }
+class Ghost: ObservableObject {
+    @Published var smilePhase: CGFloat = 0.5
+    @Published var mouthRatio: CGFloat = 0.05
+    var doingFace: Bool = false
     
     func closeMouth() {
         self.mouthRatio = 0.05
@@ -118,8 +102,9 @@ struct GhostView: View {
         self.smilePhase = 0.9
     }
     
-    func demoExpresion() {
+    func smileAndClose() {
         let anim = Animation.easeInOut(duration: 0.4)
+        self.doingFace = true
         withAnimation(anim) {
             self.smile()
         }
@@ -128,22 +113,50 @@ struct GhostView: View {
                 self.closeMouth()
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
-            withAnimation(anim) {
-                self.roar()
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.doingFace = false
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) {
+    }
+    
+    func roarAndClose() {
+        let anim = Animation.easeInOut(duration: 0.4)
+        self.doingFace = true
+        withAnimation(anim) {
+            self.roar()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             withAnimation(anim) {
                 self.closeMouth()
             }
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.4) {
-            self.demoExpresion()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.doingFace = false
         }
     }
+}
+
+struct GhostView: View {
+    @State var phase: CGFloat = 0.0
+    @ObservedObject var ghost: Ghost
+    
+    var body: some View {
+        let background = GhostShape(phase: -self.phase+2*CGFloat.pi)
+            .fill(Color("GhostDark"))
+            .offset(x: 0, y: 3)
+        return GhostShape(phase: self.phase)
+            .fill(LinearGradient(gradient: Gradient(colors: [Color("GhostLight"), Color("GhostDark")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0)))
+            .background(background)
+            .overlay(GhostFaceShape(mouthRatio: self.ghost.mouthRatio, smileFraction: self.ghost.smilePhase).fill(Color("Background")))
+            //.shadow(color: Color("GhostLight").opacity(0.2), radius: 6, x: 0, y: 0)
+            .onAppear {
+                withAnimation(Animation.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                    self.phase += CGFloat.pi*2
+                }
+            }
+    }
+    
+    
     
 }
 

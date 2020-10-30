@@ -15,6 +15,7 @@ class Game : ObservableObject {
     }
     
     var board = Board(size: 5)
+    var ghost = Ghost()
     
     @Published var state: State = .intro
     @Published var score: Int = 0
@@ -28,23 +29,59 @@ class Game : ObservableObject {
         return firstTile.hasObject
     }
     
-    func gameStep() {
-        withAnimation(Animation.easeOut(duration: self.currentInterval)) {
-            self.board.move()
+    
+    func is👻InDanger() -> Bool {
+        self.board.tiles.filter{
+            $0.x<3 && $0.y<3 &&
+            $0.x>0 && $0.y>0 && $0.hasObject
+        }.count>0
+    }
+    
+    
+    func generateObstacles() {
+        let treshold = 0.8-min(Double(score)*0.01, 1.0)*0.2
+        let tiles = self.board.lastTiles(self.board.directionRight)
+        tiles.forEach { $0.hasObject = Double.random(in: 0..<1)>treshold }
+    }
+    
+    func clearObstacles() {
+        self.board.tiles.filter {$0.x == -1 || $0.y == -1}.forEach{$0.hasObject = false}
+    }
+    
+    func animateGhostFace() {
+        guard !self.ghost.doingFace && Double.random(in: 0..<1)>0.7 else {
+            return
         }
         
-        if false {//self.isGhostCollision() {
+        if self.is👻InDanger() {
+            self.ghost.roarAndClose()
+        }
+        else {
+            self.ghost.smileAndClose()
+        }
+    }
+    
+    func gameStep() {
+        self.clearObstacles()
+        
+        self.animateGhostFace()
+        
+        withAnimation(Animation.easeOut(duration: self.currentInterval)) {
+            self.board.move()
+            self.generateObstacles()
+        }
+        
+        if self.isGhostCollision() {
+            self.ghost.roarAndClose()
             self.state = .finished
         }
         else {
             DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval*1.5) {
                 self.gameStep()
             }
+            self.currentInterval = max(self.currentInterval - 0.002, 0.15)
+            self.score += 1
         }
-        self.currentInterval = max(self.currentInterval - 0.002, 0.15)
-        self.score += 1
-        
-        print(self.currentInterval)
     }
     
     func start() {
@@ -72,7 +109,7 @@ struct GameView: View {
                         .frame(width: 80, height: 160)
                 }
                 Spacer()
-                BoardView (board: self.game.board)
+                BoardView (board: self.game.board, ghost: self.game.ghost)
                 Spacer()
                 Button(action: {
                     self.game.board.directionRight = true
