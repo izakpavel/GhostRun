@@ -29,7 +29,7 @@ class Game : ObservableObject {
     }
     
     func gameStep() {
-        withAnimation(Animation.easeIn(duration: self.currentInterval)) {
+        withAnimation(Animation.easeOut(duration: self.currentInterval)) {
             self.board.move()
         }
         
@@ -37,15 +37,19 @@ class Game : ObservableObject {
             self.state = .finished
         }
         else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval*1.5) {
                 self.gameStep()
             }
         }
-        self.currentInterval -= 0.001
+        self.currentInterval = max(self.currentInterval - 0.002, 0.15)
+        self.score += 1
+        
+        print(self.currentInterval)
     }
     
     func start() {
         self.state = .running
+        self.score = 0
         self.gameStep()
     }
 }
@@ -55,6 +59,8 @@ struct GameView: View {
     @ObservedObject var game = Game()
     var body: some View {
         VStack {
+            Text("")
+                .padding(.top, 20)
             HStack {
                 Spacer()
                 Button(action: {
@@ -78,13 +84,13 @@ struct GameView: View {
                 }
                 Spacer()
             }
-            Text("Score")
+            Text("\(self.game.score)")
                 .font(.headline)
                 .foregroundColor(Color("TileLight"))
                 .padding(.bottom, 20)
         }
         .frame(maxWidth:.infinity, maxHeight: .infinity)
-        .background(Color("Background"))
+        .background(LinearGradient(gradient: Gradient(colors: [Color("BackgroundLight"), Color("Background")]), startPoint: UnitPoint(x: 0.4, y: 0), endPoint: UnitPoint(x: 0.5, y: 1)))
         .ignoresSafeArea()
         .onAppear{
             self.game.start()

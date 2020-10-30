@@ -39,6 +39,10 @@ class Tile : ObservableObject, Identifiable{
     var opacity: Double {
         return (isFirstRow || isLastRow) ? 0.0 : 1
     }
+    
+    var zIndex: Double {
+        return -5-Double(x + y)
+    }
 }
 
 class Board: ObservableObject {
@@ -86,6 +90,7 @@ class Board: ObservableObject {
         self.tiles.forEach{ self.setTilePosition($0)}
     }
     
+    
     func move() {
         self.tiles.forEach { tile in
             if (directionRight) {
@@ -129,15 +134,16 @@ struct TileView: View {
         let overlayCross = CrossView().opacity(tile.hasObject ? 1 : 0)
             .frame(width: 40, height: 40)
             .offset(x:0, y: -20)
-        
+        let back = TileShape().fill(Color("TileDark")).offset(x: 3, y: 2)
         TileShape()
             .fill(Color("TileBase"))
+            .background(back)
             .overlay(overlayCross)
-            //.overlay(Text("\(tile.id)"))
             .frame(width: 60, height: 40)
             .scaleEffect(self.tile.scale)
             .position(self.tile.position)
             .opacity(self.tile.opacity)
+            .zIndex(tile.zIndex)
             
     }
 }
