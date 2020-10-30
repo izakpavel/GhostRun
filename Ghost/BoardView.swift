@@ -7,13 +7,32 @@
 
 import SwiftUI
 
+enum TileObject {
+    case none
+    case cross
+    case candy
+}
+
 class Tile : ObservableObject, Identifiable{
     let id: Int
     let boardSize: Int
     var x: Int
     var y: Int
-    @Published var hasObject: Bool = false
+    @Published var tileObject: TileObject = .none
     @Published var position: CGPoint = CGPoint()
+    
+    static func generateObject()->TileObject {
+        let rand = Double.random(in: 0...1)
+        if rand>0.9 {
+            return .candy
+        }
+        else if rand>0.8 {
+            return .cross
+        }
+        else {
+            return .none
+        }
+    }
     
     init(x: Int, y: Int, index: Int, boardSize: Int) {
         self.x = x
@@ -21,7 +40,7 @@ class Tile : ObservableObject, Identifiable{
         self.id = index
         self.boardSize = boardSize
         
-        self.hasObject = (x>2 && y>2 && Double.random(in: 0...1)>0.8)
+        self.tileObject = (x>2 && y>2) ? Self.generateObject() : .none
     }
     
     var isFirstRow: Bool {
@@ -101,7 +120,7 @@ class Board: ObservableObject {
     
     func clear() {
         self.tiles.forEach{
-            $0.hasObject = ($0.x>2 && $0.y>2 && Double.random(in: 0...1)>0.8)
+            $0.tileObject = ($0.x>2 && $0.y>2) ? Tile.generateObject() : .none
         }
     }
     
@@ -146,14 +165,18 @@ struct TileView: View {
     @ObservedObject var tile: Tile
     var body: some View {
         
-        let overlayCross = CrossView().opacity(tile.hasObject ? 1 : 0)
+        let overlayCross = CrossView().opacity(tile.tileObject == .cross ? 1 : 0)
             .frame(width: 40, height: 40)
             .offset(x:0, y: -20)
+        let overlayCandy = CandyView().opacity(tile.tileObject == .candy ? 1 : 0)
+            .frame(width: 20, height: 20)
+            .offset(x:0, y: -10)
         let back = TileShape().fill(Color("TileDark")).offset(x: 3, y: 2)
         TileShape()
             .fill(Color("TileBase"))
             .background(back)
             .overlay(overlayCross)
+            .overlay(overlayCandy)
             .frame(width: 60, height: 40)
             .scaleEffect(self.tile.scale)
             .position(self.tile.position)

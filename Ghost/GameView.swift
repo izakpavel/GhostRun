@@ -22,18 +22,18 @@ class Game : ObservableObject {
     
     private var currentInterval: Double = 0.4
     
-    func isGhostCollision()-> Bool {
+    func isGhostCollision()-> TileObject {
         guard let firstTile = self.board.firstTile else {
-            return false
+            return .none
         }
-        return firstTile.hasObject
+        return firstTile.tileObject
     }
     
     
     func is👻InDanger() -> Bool {
         self.board.tiles.filter{
             $0.x<3 && $0.y<3 &&
-            $0.x>0 && $0.y>0 && $0.hasObject
+                $0.x>0 && $0.y>0 && $0.tileObject == .cross
         }.count>0
     }
     
@@ -41,11 +41,22 @@ class Game : ObservableObject {
     func generateObstacles() {
         let treshold = 0.8-min(Double(score)*0.01, 1.0)*0.2
         let tiles = self.board.lastTiles(self.board.directionRight)
-        tiles.forEach { $0.hasObject = Double.random(in: 0..<1)>treshold }
+        tiles.forEach {
+            if Double.random(in: 0..<1)>treshold {
+                $0.tileObject = .cross
+            }
+            else if (Double.random(in: 0..<1)>0.9){
+                $0.tileObject = .candy
+            }
+            else {
+                $0.tileObject = .none
+            }
+            
+        }
     }
     
     func clearObstacles() {
-        self.board.tiles.filter {$0.x == -1 || $0.y == -1}.forEach{$0.hasObject = false}
+        self.board.tiles.filter {$0.x == -1 || $0.y == -1}.forEach{$0.tileObject = .none}
     }
     
     func animateGhostFace() {
@@ -71,7 +82,8 @@ class Game : ObservableObject {
             self.generateObstacles()
         }
         
-        if self.isGhostCollision() {
+        let collision = self.isGhostCollision()
+        if collision == .cross {
             DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval) {
                 withAnimation() {
                     self.state = .finished
@@ -79,11 +91,14 @@ class Game : ObservableObject {
             }
         }
         else {
+            if collision == .candy {
+                self.score += 1
+            }
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + currentInterval*1.5) {
                 self.gameStep()
             }
             self.currentInterval = max(self.currentInterval - 0.002, 0.15)
-            self.score += 1
         }
     }
     
@@ -93,6 +108,9 @@ class Game : ObservableObject {
         }
         self.score = 0
         self.board.clear()
+        self.currentInterval = 0.4
+        
+        
         self.gameStep()
     }
 }

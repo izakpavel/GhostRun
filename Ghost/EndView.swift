@@ -14,11 +14,11 @@ struct EndView: View {
         if (self.game.score==0) {
             return "You cannot rest in peace without candies."
         }
-        else if (self.game.score<50) {
-            return "You feel restless with just \(self.game.score) candies."
+        else if (self.game.score<20) {
+            return "You feel restless with only \(self.game.score) candies."
         }
-        else if (self.game.score<100){
-            return "You feel happy with \(self.game.score) candies."
+        else if (self.game.score<50){
+            return "You feel happy with \(self.game.score) candies but want more!"
         }
         else {
             return "You collected \(self.game.score) candies and conquered this game.\nYou may rest in peace now!"
