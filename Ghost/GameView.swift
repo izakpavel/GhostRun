@@ -127,10 +127,15 @@ struct GameView: View {
                 }
                 Spacer()
             }
-            Text("\(self.game.score)")
-                .font(.headline)
-                .foregroundColor(Color("TileLight"))
-                .padding(.bottom, 20)
+            HStack {
+                Spacer()
+                CandyView()
+                    .frame(width: 15, height: 15)
+                Text("\(self.game.score)")
+                    .font(.headline)
+                    .foregroundColor(Color("TileLight"))
+                Spacer()
+            }.padding(.bottom, 20)
         }
         .frame(maxWidth:.infinity, maxHeight: .infinity)
         .background(LinearGradient(gradient: Gradient(colors: [Color("BackgroundLight"), Color("Background")]), startPoint: UnitPoint(x: 0.4, y: 0), endPoint: UnitPoint(x: 0.5, y: 1)))

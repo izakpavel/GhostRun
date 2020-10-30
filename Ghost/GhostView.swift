@@ -190,3 +190,43 @@ struct CrossView: View {
             .background(back)
     }
 }
+
+
+// MARK: Candy
+
+
+struct CandyShape: Shape {
+    
+    func path(in rect: CGRect) -> Path {
+        return Path { path in
+            let width = rect.width
+            let height = rect.height
+            
+            path.move(to: CGPoint(x: 0, y: height/2))
+            path.addQuadCurve(to: CGPoint(x: width/2, y: 0), control: CGPoint(x: 0, y: 0))
+            path.addLine(to: CGPoint(x: width/2, y: height/2))
+            path.addLine(to: CGPoint(x: width, y: height/2))
+            path.addQuadCurve(to: CGPoint(x: width/2, y: height), control: CGPoint(x: width, y: height))
+            path.addLine(to: CGPoint(x: width/2, y: height/2))
+            path.addLine(to: CGPoint(x: 0, y: height/2))
+        }
+    }
+}
+
+
+struct CandyView: View {
+    var body: some View {
+        let overlay1 = CandyShape()
+            .fill(Color("Candy2"))
+            .rotationEffect(Angle(degrees: 90))
+        let back = CandyShape()
+            .fill(Color("Candy3"))
+            .rotationEffect(Angle(degrees: -45))
+        CandyShape()
+            .fill(Color("Candy1"))
+            .overlay(overlay1)
+            .overlay(LinearGradient(gradient: Gradient(colors: [Color.white, Color.gray]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 1)).blendMode(.softLight))
+            .clipShape(Circle())
+            .background(back.scaleEffect(CGSize(width: 1.5, height: 1.2)))
+    }
+}
